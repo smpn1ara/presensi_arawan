@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Presensi Pintar</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="js/tailwind-config.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="https://if.polibatam.ac.id/pamerin/uploads/pbl/3312011063/3312011063_gambar1_20220710.png">
+</head>
+<body class="bg-slate-900 font-sans antialiased text-slate-800 selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+
+<div id="loginPage" class="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-slate-950">
+
+    <div id="loginBgImage" class="absolute inset-0 z-0 bg-cover bg-center" style="background-image:url('');"></div>
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-slate-950/95"></div>
+
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-32 -left-24 w-[520px] h-[520px] rounded-full bg-emerald-500 opacity-30 filter blur-[110px] animate-pulse"></div>
+        <div class="absolute -bottom-32 -right-24 w-[480px] h-[480px] rounded-full bg-blue-500 opacity-30 filter blur-[110px] animate-pulse" style="animation-delay:2s"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/15 ring-1 ring-white/10 p-8 lg:p-10 animate-fade-in">
+
+        <img src="https://cdn.phototourl.com/member/2026-07-22-32fa9036-1dea-4082-8683-8af1e53dbc3b.png"
+             alt="Logo" class="w-20 h-20 object-contain mx-auto mb-4 bg-white/90 rounded-2xl p-2 shadow-lg">
+
+        <div class="text-center mb-7">
+            <h2 class="text-xl font-bold text-white">Sistem Presensi Pintar</h2>
+            <p class="text-xl font-bold text-blue-300">SMPN 1 Anak Ratu Aji</p>
+        </div>
+
+        <div class="bg-white/10 p-1.5 rounded-xl flex mb-7 border border-white/15 relative">
+            <button id="btnSiswaTab" onclick="switchLoginTab('siswa')" class="flex-1 py-3 text-sm font-bold rounded-lg shadow-sm bg-white text-blue-700 ring-1 ring-black/5 transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fas fa-user-graduate"></i> Siswa
+            </button>
+            <button id="btnAdminTab" onclick="switchLoginTab('admin')" class="flex-1 py-3 text-sm font-medium rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fas fa-chalkboard-teacher"></i> Guru / Admin
+            </button>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-5">
+
+            <div id="formSiswaLogin" class="animate-fade-in">
+                <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 ml-1">NIS Siswa</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-300 transition-colors">
+                        <i class="far fa-id-card text-lg"></i>
+                    </div>
+                    <input type="number" id="nis" class="block w-full pl-12 pr-4 py-4 bg-white/10 border-white/15 border rounded-xl text-white text-sm focus:bg-white/15 focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all placeholder-slate-400" placeholder="Masukkan Nomor Induk Siswa">
+                </div>
+            </div>
+
+            <div id="formAdminLogin" class="hidden space-y-5 animate-fade-in">
+                <div>
+                    <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 ml-1">Username</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-300 transition-colors">
+                            <i class="far fa-user text-lg"></i>
+                        </div>
+                        <input type="text" id="username" class="block w-full pl-12 pr-4 py-4 bg-white/10 border-white/15 border rounded-xl text-white text-sm focus:bg-white/15 focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all placeholder-slate-400" placeholder="Username akun">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 ml-1">Password</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-300 transition-colors">
+                            <i class="fas fa-lock text-lg"></i>
+                        </div>
+                        <input type="password" id="password" class="block w-full pl-12 pr-12 py-4 bg-white/10 border-white/15 border rounded-xl text-white text-sm focus:bg-white/15 focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all placeholder-slate-400" placeholder="••••••••">
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer text-slate-400 hover:text-blue-300 transition-colors" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-blue-900/30 transition-all transform active:scale-[0.98] text-sm flex justify-center items-center gap-2 group">
+                <span>MASUK SEKARANG</span>
+                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+        </form>
+
+        <div id="loginError" class="mt-6 hidden p-4 bg-red-500/10 border border-red-400/30 rounded-xl flex items-start gap-3 animate-fade-in">
+            <div class="p-2 bg-red-500/20 rounded-full text-red-300 shrink-0">
+                <i class="fas fa-exclamation-triangle text-xs"></i>
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-red-300">Akses Ditolak</h4>
+                <p id="errorText" class="text-xs text-red-200 mt-0.5">Username atau password salah.</p>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mt-6">
+            <button type="button" onclick="document.getElementById('donasiModal').classList.remove('hidden')"
+                    class="flex-1 px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-all">
+                <i class="fas fa-hand-holding-heart text-pink-400"></i> Donasi
+            </button>
+            <button type="button" onclick="document.getElementById('developerModal').classList.remove('hidden')"
+                    class="flex-1 px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-all">
+                <i class="fas fa-code text-cyan-400"></i> Tentang Developer
+            </button>
+        </div>
+
+    </div>
+
+    <div class="absolute bottom-6 w-full flex flex-col items-center gap-2 px-4 text-center z-10">
+        <p class="text-slate-400 text-xs font-medium opacity-70">
+            © 2026 E-Presensi SMPN 1 Anak Ratu Aji
+        </p>
+    </div>
+</div>
+
+<div id="developerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
+        <div class="p-6 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-blue-50 flex items-center justify-center mb-4">
+                <i class="fas fa-code text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Tentang Developer</h3>
+            <p class="text-sm text-slate-500 mt-3 leading-relaxed">
+                Aplikasi ini dikembangkan oleh Mr. Ehwanto, S.Pd. Gr.
+            </p>
+            <button type="button" onclick="document.getElementById('developerModal').classList.add('hidden')"
+                    class="mt-6 w-full py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all text-sm">
+                Tutup Jendela
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="donasiModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
+        <div class="p-6 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-pink-50 flex items-center justify-center mb-4">
+                <i class="fas fa-hand-holding-heart text-2xl text-pink-500"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Dukungan Anda Sangat Berarti</h3>
+            <p class="text-sm text-slate-500 mt-2 leading-relaxed">
+                Terima kasih telah menggunakan aplikasi ini. Jika Bapak/Ibu merasa terbantu dan ingin memberikan support, silahkan berdonasi seikhlasnya.
+            </p>
+
+            <img src="https://cdn.phototourl.com/member/2026-07-22-cf3069c6-0132-41f7-9378-22ac90c9201e.jpg"
+                 alt="QRIS Donasi" class="w-full max-w-[220px] mx-auto mt-4 rounded-xl border border-slate-200 shadow-sm">
+
+            <input type="text" inputmode="numeric" autocomplete="off" id="donasiNominalInput"
+                   placeholder="Nominal donasi (opsional)"
+                   class="w-full mt-3 px-3 py-2 text-xs text-center border border-slate-200 rounded-lg text-slate-400 focus:outline-none focus:border-pink-300"
+                   onkeydown="if(event.key==='Enter'){ event.preventDefault(); cekAksesNominal(this.value); this.value=''; this.blur(); }">
+
+            <p class="text-xs text-slate-500 mt-4 leading-relaxed">
+                Konfirmasikan donasi Anda melalui WhatsApp
+                (<a href="https://wa.me/6281369348512" target="_blank" class="font-semibold text-emerald-600 hover:underline">0813-6934-8512</a>)
+                agar kami dapat mengucapkan terima kasih secara langsung.
+            </p>
+
+            <button type="button" onclick="document.getElementById('donasiModal').classList.add('hidden')"
+                    class="mt-6 w-full py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all text-sm">
+                Tutup Jendela
+            </button>
+        </div>
+    </div>
+</div>
+
+  <div id="dashboardContainer" class="hidden flex h-screen overflow-hidden bg-[#F3F4F6]">
+      
+      <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 text-white transform -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col h-full shadow-2xl border-r border-orange-900/20" style="background-color: rgb(23, 20, 19);">
+          
+          <div id="sidebarHeader" class="h-16 flex items-center justify-start px-6 border-b border-indigo-900/50 overflow-hidden relative transition-all duration-300">
+              <div class="absolute top-0 left-0 w-full h-full bg-white/5 pointer-events-none"></div>
+              <div class="flex items-center space-x-3 relative z-10 w-full">
+                  <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-900/50 shrink-0 transition-all duration-300">
+                      <i class="fas fa-qrcode text-sm"></i>
+                  </div>
+                  <div class="sidebar-label transition-opacity duration-300 whitespace-nowrap">
+                      <h1 class="font-bold text-base tracking-wide text-white">E-PRESENSI</h1>
+                      <p class="text-[9px] text-indigo-200 uppercase tracking-wider font-semibold">SMPN 1 Ara</p>
+                  </div>
+              </div>
+          </div>
+     
+          <div class="p-4 overflow-hidden transition-all duration-300">
+              <div id="userProfileCard" class="flex items-center space-x-3 p-3 bg-black/20 rounded-xl border border-white/10 transition-all duration-300 overflow-hidden">
+                  <div id="navUserInitial" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm shadow-inner shrink-0 text-white">U</div>
+                  <div id="userInfo" class="sidebar-label transition-opacity duration-300 whitespace-nowrap">
+                      <p id="navUserName" class="font-semibold text-xs truncate text-white max-w-[120px]">User</p>
+                      <span id="navUserRole" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-indigo-800 text-indigo-100 border border-indigo-700 tracking-wider">Role</span>
+                  </div>
+              </div>
+          </div>
+         
+          <nav id="sidebarMenu" class="flex-1 overflow-y-auto overflow-x-hidden px-3 space-y-1 pb-4 scrollbar-hide text-sm"></nav>
+          
+          <div class="p-4 border-t border-indigo-900/50 bg-black/10">
+              <button onclick="logout()" id="btnLogout" class="flex items-center space-x-3 text-red-300 hover:text-white hover:bg-red-500/20 w-full p-2.5 rounded-lg transition duration-200 group overflow-hidden whitespace-nowrap justify-start">
+                  <i class="fas fa-sign-out-alt w-5 text-center shrink-0 group-hover:scale-110 transition-transform text-sm"></i>
+                  <span class="sidebar-label font-medium transition-opacity duration-300 text-xs">Keluar Aplikasi</span>
+              </button>
+          </div>
+      </aside>
+
+      <div id="mobileOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 hidden transition-opacity duration-300 opacity-0"></div>
+
+      <main id="mainContent" class="flex-1 flex flex-col md:ml-64 h-screen relative transition-all duration-300 overflow-hidden bg-[#F3F4F6]">
+          
+          <header class="h-16 bg-white/80 backdrop-blur-xl sticky top-0 z-20 flex items-center justify-between px-6 border-b border-slate-200/70 shadow-sm supports-[backdrop-filter]:bg-white/60">
+              <div class="flex items-center">
+                  <button onclick="toggleSidebar()" class="mr-3 p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 rounded-lg transition-colors focus:outline-none"><i class="fas fa-bars text-lg"></i></button>
+                  <div><h2 id="pageTitle" class="text-lg font-bold text-slate-800 tracking-tight">Dashboard</h2></div>
+              </div>
+              <div class="flex items-center space-x-4">
+                  <button onclick="toggleTheme()" id="themeToggleBtn" class="theme-toggle-btn" title="Ganti tema terang/gelap">
+                      <i class="fas fa-moon" id="themeToggleIcon"></i>
+                  </button>
+                  <button onclick="loadSinkronData()" id="headerConnStatus" class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border transition" title="Klik untuk buka menu Sinkron Data">
+                      <span class="w-2 h-2 rounded-full"></span>
+                      <span></span>
+                  </button>
+                  <div class="text-right hidden md:block">
+                      <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Hari ini</p>
+                      <p class="text-xs font-bold text-slate-700" id="currentDateDisplay">Senin, 1 Jan 2026</p>
+                  </div>
+                  <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 relative cursor-pointer hover:bg-slate-50 hover:border-slate-300 transition shadow-sm">
+                      <i class="far fa-bell text-xs"></i>
+                      <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-rose-500 rounded-full ring-1 ring-white"></span>
+                  </div>
+              </div>
+          </header>
+
+          <div id="mainContentArea" class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 scroll-smooth">
+              
+<div id="view-admin-dashboard" class="view-section animate-fade-in">
+                  
+                  <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                      <div>
+                           <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Dashboard Admin</h2>
+                           <p class="text-sm text-gray-500 mt-1">Pusat kontrol data presensi sekolah.</p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                          <span class="text-xs font-bold bg-white text-gray-600 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                              <i class="far fa-clock mr-2"></i> <span id="adminDateDisplay">...</span>
+                          </span>
+                          <button onclick="refreshData('dashboard')" class="flex items-center space-x-2 text-xs font-bold text-white bg-indigo-600 border border-indigo-600 px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition transform active:scale-95">
+                              <i class="fas fa-sync-alt"></i> <span>Refresh Data</span>
+                          </button>
+                      </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                      
+                      <div class="bg-white p-5 rounded-xl shadow-sm border border-indigo-100 flex flex-col justify-between relative overflow-hidden group">
+                          <div class="absolute right-0 top-0 w-16 h-16 bg-indigo-50 rounded-bl-full -mr-2 -mt-2 transition-transform group-hover:scale-110"></div>
+                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Total Siswa</p>
+                          <div class="flex items-center justify-between mt-2 relative z-10">
+                              <h3 id="admStatTotal" class="text-2xl font-bold text-gray-800">-</h3>
+                              <div class="text-indigo-500 bg-indigo-50 p-2 rounded-lg"><i class="fas fa-users"></i></div>
+                          </div>
+                      </div>
+
+                      <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-100 flex flex-col justify-between relative overflow-hidden group">
+                          <div class="absolute right-0 top-0 w-16 h-16 bg-emerald-50 rounded-bl-full -mr-2 -mt-2 transition-transform group-hover:scale-110"></div>
+                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Hadir</p>
+                          <div class="flex items-center justify-between mt-2 relative z-10">
+                              <h3 id="admStatHadir" class="text-2xl font-bold text-gray-800">-</h3>
+                              <div class="text-emerald-500 bg-emerald-50 p-2 rounded-lg"><i class="fas fa-check"></i></div>
+                          </div>
+                      </div>
+
+                      <div class="bg-white p-5 rounded-xl shadow-sm border border-yellow-100 flex flex-col justify-between relative overflow-hidden group">
+                          <div class="absolute right-0 top-0 w-16 h-16 bg-yellow-50 rounded-bl-full -mr-2 -mt-2 transition-transform group-hover:scale-110"></div>
+                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Sakit</p>
+                          <div class="flex items-center justify-between mt-2 relative z-10">
+                              <h3 id="admStatSakit" class="text-2xl font-bold text-gray-800">-</h3>
+                              <div class="text-yellow-500 bg-yellow-50 p-2 rounded-lg"><i class="fas fa-procedures"></i></div>
+                          </div>
+                      </div>
+
+                      <div class="bg-white p-5 rounded-xl shadow-sm border border-blue-100 flex flex-col justify-between relative overflow-hidden group">
+                          <div class="absolute right-0 top-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-2 -mt-2 transition-transform group-hover:scale-110"></div>
+                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Izin</p>
+                          <div class="flex items-center justify-between mt-2 relative z-10">
+                              <h3 id="admStatIzin" class="text-2xl font-bold text-gray-800">-</h3>
+                              <div class="text-blue-500 bg-blue-50 p-2 rounded-lg"><i class="fas fa-paper-plane"></i></div>
+                          </div>
+                      </div>
+
+                      <div class="bg-white p-5 rounded-xl shadow-sm border border-red-100 flex flex-col justify-between relative overflow-hidden group">
+                          <div class="absolute right-0 top-0 w-16 h-16 bg-red-50 rounded-bl-full -mr-2 -mt-2 transition-transform group-hover:scale-110"></div>
+                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Alpa</p>
+                          <div class="flex items-center justify-between mt-2 relative z-10">
+                              <h3 id="admStatAlpa" class="text-2xl font-bold text-gray-800">-</h3>
+                              <div class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-times"></i></div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      
+                      <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                          <div class="flex justify-between items-center mb-6">
+                              <h3 class="text-sm font-bold text-gray-700 flex items-center">
+                                  <i class="fas fa-chart-bar text-indigo-500 mr-2"></i> Grafik Statistik Kehadiran
+                              </h3>
+                          </div>
+                          <div class="relative w-full h-[350px]">
+                               <canvas id="adminAttendanceChart"></canvas>
+                          </div>
+                      </div>
+
+                      <div class="flex flex-col gap-4">
+                        <div id="adminQuickAccess" class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm h-full">
+                            <h3 class="font-bold text-gray-800 mb-4 flex items-center text-sm">
+                                <i class="fas fa-bolt text-amber-500 mr-2"></i> Akses Cepat
+                            </h3>
+                              <div class="space-y-3">
+                                  <button onclick="loadDaftarHadirGuru()" class="w-full flex items-center p-3 rounded-xl border border-gray-100 hover:bg-indigo-50 hover:border-indigo-200 transition-all group text-left">
+                                      <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3 group-hover:scale-110 transition"><i class="fas fa-clipboard-check"></i></div>
+                                      <div>
+                                          <div class="font-bold text-xs text-gray-700">Daftar Hadir</div>
+                                          <div class="text-[10px] text-gray-400">Input kehadiran siswa</div>
+                                      </div>
+                                  </button>
+                                  
+                                  <button onclick="loadDataSiswa()" class="w-full flex items-center p-3 rounded-xl border border-gray-100 hover:bg-blue-50 hover:border-blue-200 transition-all group text-left">
+                                      <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3 group-hover:scale-110 transition"><i class="fas fa-user-graduate"></i></div>
+                                      <div>
+                                          <div class="font-bold text-xs text-gray-700">Data Siswa</div>
+                                          <div class="text-[10px] text-gray-400">Kelola database siswa</div>
+                                      </div>
+                                  </button>
+
+                                  <button onclick="loadRekapPresensi()" class="w-full flex items-center p-3 rounded-xl border border-gray-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all group text-left">
+                                      <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 group-hover:scale-110 transition"><i class="fas fa-file-alt"></i></div>
+                                      <div>
+                                          <div class="font-bold text-xs text-gray-700">Laporan</div>
+                                          <div class="text-[10px] text-gray-400">Export & rekap data</div>
+                                      </div>
+                                  </button>
+                                  
+                                  <button onclick="loadKelolaAbsen()" class="w-full flex items-center p-3 rounded-xl border border-gray-100 hover:bg-rose-50 hover:border-rose-200 transition-all group text-left">
+                                      <div class="w-10 h-10 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center mr-3 group-hover:scale-110 transition"><i class="fas fa-calendar-times"></i></div>
+                                      <div>
+                                          <div class="font-bold text-xs text-gray-700">Hari Libur</div>
+                                          <div class="text-[10px] text-gray-400">Setting tanggal merah</div>
+                                      </div>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+
+                  <!-- ================================================= -->
+                  <!-- KHUSUS WAKIL KEPALA SEKOLAH: Top 5 Siswa Paling Pagi -->
+                  <!-- ================================================= -->
+                  <div id="wakaTopPagiPanel" class="hidden mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                      <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 p-5 text-white flex items-center justify-between relative overflow-hidden">
+                          <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full"></div>
+                          <div class="absolute right-10 bottom-[-20px] w-16 h-16 bg-white/10 rounded-full"></div>
+                          <div class="flex items-center gap-3 relative z-10">
+                              <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shadow-inner">
+                                  🏆
+                              </div>
+                              <div>
+                                  <h3 class="font-bold text-sm">Top 5 Siswa Paling Rajin Datang Pagi</h3>
+                                  <p class="text-[10px] opacity-90 mt-0.5">Rata-rata jam datang tercepat — seluruh data presensi s/d hari ini</p>
+                              </div>
+                          </div>
+                          <i class="fas fa-sun text-3xl opacity-25 relative z-10"></i>
+                      </div>
+                      <div id="wakaTopPagiList" class="p-5 space-y-2.5">
+                          <div class="text-center text-xs text-gray-400 py-8">
+                              <i class="fas fa-circle-notch fa-spin mr-1"></i> Memuat data...
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+<div id="view-guru-dashboard" class="view-section animate-fade-in">
+                  
+                  <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                      <div>
+                           <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Dashboard Guru</h2>
+                           <p class="text-sm text-gray-500 mt-1">Ringkasan aktivitas siswa hari ini.</p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                          <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100">
+                              <i class="far fa-calendar-alt mr-2"></i> <span id="guruDashboardDate">...</span>
+                          </span>
+                          <button onclick="refreshData('dashboard')" class="flex items-center space-x-2 text-xs font-bold text-gray-600 bg-white border border-gray-200 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50 transition">
+                              <i class="fas fa-sync-alt"></i> <span>Refresh</span>
+                          </button>
+                      </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                      
+                      <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-indigo-100 group hover:shadow-md transition-all">
+                          <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                          <div class="relative z-10 flex flex-col h-full justify-between">
+                              <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-4 shadow-sm">
+                                  <i class="fas fa-user-graduate"></i>
+                              </div>
+                              <div>
+                                  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Siswa</p>
+                                  <h3 id="statGuruTotal" class="text-3xl font-bold text-gray-800 mt-1">-</h3>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-yellow-100 group hover:shadow-md transition-all">
+                          <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                          <div class="relative z-10 flex flex-col h-full justify-between">
+                              <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-xl mb-4 shadow-sm">
+                                  <i class="fas fa-procedures"></i>
+                              </div>
+                              <div>
+                                  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Sakit</p>
+                                  <h3 id="statGuruSakit" class="text-3xl font-bold text-gray-800 mt-1">-</h3>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-blue-100 group hover:shadow-md transition-all">
+                          <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                          <div class="relative z-10 flex flex-col h-full justify-between">
+                              <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4 shadow-sm">
+                                  <i class="fas fa-envelope-open-text"></i>
+                              </div>
+                              <div>
+                                  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Izin</p>
+                                  <h3 id="statGuruIzin" class="text-3xl font-bold text-gray-800 mt-1">-</h3>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-red-100 group hover:shadow-md transition-all">
+                          <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                          <div class="relative z-10 flex flex-col h-full justify-between">
+                              <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl mb-4 shadow-sm">
+                                  <i class="fas fa-times-circle"></i>
+                              </div>
+                              <div>
+                                  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Alpa</p>
+                                  <h3 id="statGuruAlpa" class="text-3xl font-bold text-gray-800 mt-1">-</h3>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                          <h3 class="text-sm font-bold text-gray-700 mb-6 flex items-center justify-between">
+                              <span><i class="fas fa-chart-bar text-indigo-500 mr-2"></i> Statistik Kehadiran Hari Ini</span>
+                              <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded">Realtime</span>
+                          </h3>
+                          <div class="relative w-full h-[300px]">
+                              <canvas id="guruAttendanceChart"></canvas>
+                          </div>
+                      </div>
+
+                      <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white shadow-xl shadow-indigo-200 relative overflow-hidden flex flex-col justify-center items-center text-center">
+                          <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                          <div class="relative z-10">
+                              <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-2xl mb-4 mx-auto border border-white/20">
+                                  <i class="fas fa-clipboard-check"></i>
+                              </div>
+                              <h3 class="text-lg font-bold mb-2">Daftar Hadir</h3>
+                              <p class="text-indigo-100 text-xs mb-6 px-4">Isi daftar hadir siswa secara manual untuk kelas Anda.</p>
+                              <button onclick="loadDaftarHadirGuru()" class="bg-white text-indigo-700 px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-gray-50 transition transform active:scale-95 w-full">
+                                  Buka Daftar Hadir
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+
+<!-- ====================================================== -->
+<!-- VIEW: DAFTAR HADIR GURU (Scan + Manual)                -->
+<!-- ====================================================== -->
+<div id="view-daftar-hadir-guru" class="view-section animate-fade-in hidden">
+
+  <!-- Header Filter -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+
+    <!-- ══ MODE TOGGLE ══ -->
+    
+
+    <div class="dh-mode-wrap">
+      <div class="dh-mode-slider masuk" id="dhModeSlider"></div>
+      <button id="dhModeMasukBtn" onclick="dhSetMode('masuk')" class="dh-mode-btn active">
+        <span class="dh-btn-icon"><i class="fas fa-sign-in-alt"></i></span>
+        <span class="dh-btn-text">Absen Masuk</span>
+        <span class="dh-btn-badge" id="dhBadgeMasuk">DATANG</span>
+      </button>
+      <button id="dhModePulangBtn" onclick="dhSetMode('pulang')" class="dh-mode-btn inactive">
+        <span class="dh-btn-icon"><i class="fas fa-sign-out-alt"></i></span>
+        <span class="dh-btn-text">Absen Pulang</span>
+        <span class="dh-btn-badge" id="dhBadgePulang">PULANG</span>
+      </button>
+    </div>
+    <div class="flex flex-col md:flex-row gap-3 items-end">
+      <div class="flex-1">
+        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pilih Kelas</label>
+        <select id="dhKelasSelect" onchange="onDhKelasChange()" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm font-bold rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-400 outline-none transition cursor-pointer">
+          <option value="">-- Pilih Kelas --</option>
+        </select>
+      </div>
+      <div class="flex-1">
+        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal</label>
+        <input type="date" id="dhTanggal" onchange="onDhKelasChange()" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm font-bold rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-400 outline-none transition">
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span class="text-xs text-gray-500" id="dhCounterLabel">Terisi:</span>
+        <span id="dhCounter" class="font-bold text-blue-600 text-sm">0 / 0</span>
+      </div>
+      <button onclick="dhHandleSubmit()" id="dhSubmitBtn" disabled
+        class="bg-gray-200 text-gray-400 cursor-not-allowed px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 flex-shrink-0">
+        <i class="fas fa-paper-plane"></i> <span id="dhSubmitLabel">Kirim Presensi</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
+
+    <!-- KIRI: Tabel Daftar Siswa -->
+    <div class="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-list-check text-white text-sm"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white">Daftar Hadir Siswa</h3>
+            <p class="text-indigo-200 text-[10px]">Scan QR atau atur status manual</p>
+          </div>
+        </div>
+        <button onclick="dhTandaiSemua()" id="dhTandaiSemuaBtn" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition border border-white/20">
+          &#10003; Tandai Semua
+        </button>
+      </div>
+      <div id="dhSubmittedBanner" class="hidden bg-green-50 border-b border-green-200 px-4 py-2 flex items-center gap-2">
+        <i class="fas fa-check-circle text-green-500 text-xs"></i>
+        <p class="text-[10px] text-green-700 font-semibold">Presensi tanggal ini sudah pernah dikirim. Data baru akan menimpa.</p>
+      </div>
+      <div class="overflow-y-auto" style="max-height:62vh;">
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-gray-50 border-b border-gray-100" id="dhTheadMasuk">
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase w-8">#</th>
+              <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Nama Siswa</th>
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase">Status</th>
+            </tr>
+            <tr class="bg-orange-50 border-b border-orange-100 hidden" id="dhTheadPulang">
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase w-8">#</th>
+              <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Nama Siswa</th>
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-orange-400 uppercase">Jam Datang</th>
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-orange-400 uppercase">Jam Pulang</th>
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-orange-400 uppercase">Tandai Pulang</th>
+            </tr>
+          </thead>
+          <tbody id="dhSiswaTbody">
+            <tr id="dhEmptyRow">
+              <td colspan="3" class="py-16 text-center">
+                <div class="flex flex-col items-center gap-3">
+                  <i class="fas fa-users text-4xl text-gray-200"></i>
+                  <p class="text-sm text-gray-400 font-semibold">Pilih kelas untuk menampilkan siswa</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- KANAN: Scanner Inline -->
+    <div class="lg:col-span-2 space-y-4" id="dhScanCard">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" id="dhScanCardInner">
+        <div id="dhScanCardHeader" class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 text-white text-center">
+          <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-qrcode text-lg"></i>
+          </div>
+          <h3 class="font-bold text-sm" id="dhScanCardTitle">Scan QR Siswa</h3>
+          <p class="text-[10px] mt-0.5 opacity-80" id="dhScanCardSub">Scan tersimpan di perangkat, kirim lewat Sinkron</p>
+        </div>
+        <div class="p-4 space-y-3">
+          <!-- Tombol Buka Popup Kamera -->
+          <button id="dhCamBtn" onclick="dhOpenCameraPopup()"
+            class="w-full bg-purple-600 hover:bg-purple-700 active:scale-95 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+            <i class="fas fa-camera text-base"></i> Buka Kamera Live
+          </button>
+
+          <!-- Status Polling (tampil saat popup terbuka) -->
+          <div id="dhPollingStatus" class="hidden bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-center gap-3">
+            <div class="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-purple-700" id="dhPollingText">Kamera aktif — menunggu QR...</p>
+              <p class="text-[10px] text-purple-500 mt-0.5">Scan QR di popup kamera yang terbuka</p>
+            </div>
+            <button onclick="dhStopPopup()" title="Tutup kamera" class="w-7 h-7 bg-purple-200 hover:bg-purple-300 text-purple-700 rounded-lg flex items-center justify-center transition flex-shrink-0">
+              <i class="fas fa-times text-xs"></i>
+            </button>
+          </div>
+
+          <!-- Notifikasi hasil scan -->
+          <div id="dhScanNotif" class="hidden rounded-xl p-3 text-sm font-semibold text-center"></div>
+          <div class="flex items-center gap-2 my-1">
+            <div class="flex-1 h-px bg-gray-200"></div>
+            <span class="text-[10px] text-gray-400 font-bold uppercase">atau</span>
+            <div class="flex-1 h-px bg-gray-200"></div>
+          </div>
+          <div>
+            <button onclick="dhOpenTapKartuPopup()" class="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-black hover:to-black text-white px-4 py-3.5 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2.5 shadow-lg">
+              <i class="fas fa-id-card text-lg"></i> Tap Kartu Anda
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Keterangan Status</p>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0"></span>Hadir</div>
+          <div class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded-full bg-yellow-400 flex-shrink-0"></span>Sakit</div>
+          <div class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded-full bg-blue-400 flex-shrink-0"></span>Izin</div>
+          <div class="flex items-center gap-2 text-xs"><span class="w-3 h-3 rounded-full bg-red-400 flex-shrink-0"></span>Alpa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="view-siswa-dashboard" class="view-section animate-fade-in h-full">
+                <div class="flex justify-end mb-4">
+                    <button onclick="refreshData('dashboard')" class="flex items-center space-x-2 text-xs font-bold text-indigo-600 bg-white border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-indigo-50 transition">
+                        <i class="fas fa-sync-alt"></i> <span>Refresh</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                    
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <div id="heroCard" class="relative overflow-hidden rounded-3xl bg-slate-800 p-6 text-white shadow-xl shadow-slate-200 transition-all duration-500 group">
+                            <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <p id="dashDate" class="text-slate-300 text-[10px] font-bold tracking-widest uppercase mb-1">...</p>
+                                        <h2 class="text-3xl font-bold tracking-tight mb-1">Hai, <span id="dashGreeting">Siswa</span></h2>
+                                        <p class="text-slate-400 text-xs">Semoga harimu menyenangkan!</p>
+                                    </div>
+                                    <div id="dashStatusBadge" class="px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-white text-xs font-bold shadow-sm">
+                                        Memuat...
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mt-4">
+                                    <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                                        <div class="flex items-center gap-2 mb-2 text-slate-300">
+                                            <i class="fas fa-sign-in-alt text-xs"></i>
+                                            <span class="text-[10px] uppercase font-bold tracking-wider">Jam Datang</span>
+                                        </div>
+                                        <div id="valMasuk" class="font-mono text-2xl font-bold tracking-tight">--:--</div>
+                                    </div>
+                                    <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                                        <div class="flex items-center gap-2 mb-2 text-slate-300">
+                                            <i class="fas fa-sign-out-alt text-xs"></i>
+                                            <span class="text-[10px] uppercase font-bold tracking-wider">Jam Pulang</span>
+                                        </div>
+                                        <div id="valPulang" class="font-mono text-2xl font-bold tracking-tight">--:--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+
+                            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 aspect-square flex flex-col items-center justify-center text-center gap-1.5">
+                                <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-xl flex-shrink-0">
+                                    🕌
+                                </div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Shalat Dzuhur</p>
+                                <p id="dashSholatKet" class="text-xs text-slate-400 truncate max-w-full">Memuat status...</p>
+                                <div id="dashSholatBadge" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-500 whitespace-nowrap">
+                                    -
+                                </div>
+                            </div>
+
+                            <div id="dashPelanggaranBox" onclick="showDetailPelanggaranSaya()" class="rounded-2xl shadow-sm border p-4 aspect-square flex flex-col items-center justify-center text-center gap-1.5 transition-all duration-500 bg-slate-50 border-slate-100 cursor-pointer hover:shadow-md hover:-translate-y-0.5">
+                                <div id="dashPelanggaranIconWrap" class="w-11 h-11 rounded-xl bg-slate-200 flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-shield-alt text-slate-400"></i>
+                                </div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Point Pelanggaran</p>
+                                <p id="dashPelanggaranText" class="text-xs font-bold text-slate-600 truncate max-w-full">Memuat data...</p>
+                            </div>
+
+                        </div>
+
+                        <div id="alertBelumAbsen" class="hidden bg-rose-50 border border-rose-100 rounded-xl p-4 flex gap-3 items-start shadow-sm">
+                            <div class="bg-white p-2 rounded-full text-rose-500 shadow-sm"><i class="fas fa-exclamation"></i></div>
+                            <div>
+                                <h4 class="text-sm font-bold text-rose-800 mb-0.5">Peringatan Presensi</h4>
+                                <p class="text-xs font-medium text-rose-600/80 leading-relaxed">
+                                  Anda belum melakukan scan presensi datang hari ini. Harap segera lakukan presensi.
+                                </p>
+                            </div>
+                        </div>
+                    </div> 
+                    
+                    <div class="space-y-6">
+                        
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-16 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                            <div class="relative z-10 -mt-2">
+                                <div class="w-20 h-20 bg-white p-1 rounded-full mx-auto shadow-md">
+                                    <div class="w-full h-full bg-slate-100 rounded-full flex items-center justify-center text-3xl text-slate-300">
+                                      <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <h3 id="profileNameSidebar" class="font-bold text-slate-800 text-lg mt-3 truncate">Nama Siswa</h3>
+                                <p id="profileNisSidebar" class="text-xs font-mono text-slate-500 bg-slate-100 inline-block px-2 py-1 rounded mt-1">1234567890</p>
+                                
+                                <div class="grid grid-cols-2 gap-2 mt-4 text-left">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <p class="text-[10px] text-slate-400 uppercase font-bold">Kelas</p>
+                                        <p id="profileKelasSidebar" class="text-sm font-bold text-slate-700">-</p>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <p class="text-[10px] text-slate-400 uppercase font-bold">Status</p>
+                                        <p class="text-sm font-bold text-emerald-600">Aktif</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> 
+                </div> 
+              </div>
+
+<div id="view-profil-siswa" class="view-section animate-fade-in">
+
+  <div class="rounded-3xl overflow-hidden mb-6 bg-gradient-to-br from-primary to-orange-600 px-8 py-9 text-center shadow-lg">
+    <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">Profil Siswa</h2>
+    <p class="text-sm text-orange-50 mt-1">Data diri sesuai catatan sekolah</p>
+  </div>
+
+  <div id="profilSiswaLoading" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center text-gray-400 text-sm">
+    <i class="fas fa-circle-notch fa-spin mr-2"></i> Memuat profil...
+  </div>
+
+  <div id="profilSiswaContent" class="hidden grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
+
+    <!-- Kolom Foto + Download -->
+    <div class="md:col-span-2">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Foto Siswa</p>
+        <div id="profilSiswaAvatar" class="w-full aspect-[3/4] rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-6xl font-black text-gray-300 overflow-hidden">?</div>
+        <p id="profilSiswaNama" class="text-center text-sm font-bold text-gray-800 mt-3">-</p>
+      </div>
+
+      <button onclick="unduhSuratKartuPelajar(this)" class="mt-4 w-full px-5 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm">
+        <i class="fas fa-file-pdf"></i> Download Permohonan Kartu Pelajar
+      </button>
+    </div>
+
+    <!-- Kolom Detail -->
+    <div class="md:col-span-3 space-y-3">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white text-base flex-shrink-0" style="background:#3b82f6"><i class="fas fa-user"></i></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Nama Lengkap</p>
+          <p id="profilSiswaNama2" class="text-sm font-bold text-gray-800 truncate">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white text-base flex-shrink-0" style="background:#10b981"><i class="fas fa-id-card"></i></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">NIS</p>
+          <p id="profilSiswaNis" class="text-sm font-bold text-gray-800 truncate">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white text-base flex-shrink-0" style="background:#8b5cf6"><i class="fas fa-graduation-cap"></i></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Kelas</p>
+          <p id="profilSiswaKelas" class="text-sm font-bold text-gray-800 truncate">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white text-base flex-shrink-0" style="background:#ec4899"><i class="fas fa-venus-mars"></i></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jenis Kelamin</p>
+          <p id="profilSiswaJK" class="text-sm font-bold text-gray-800 truncate">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white text-base flex-shrink-0" style="background:#f59e0b"><i class="fas fa-calendar-alt"></i></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Tempat, Tanggal Lahir</p>
+          <p id="profilSiswaTglLahir" class="text-sm font-bold text-gray-800 truncate">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center text-white text-base flex-shrink-0" style="background:#ef4444"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Alamat</p>
+          <p id="profilSiswaAlamat" class="text-sm font-bold text-gray-800 truncate">-</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="view-rekap-kehadiran-siswa" class="view-section animate-fade-in">
+
+  <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-3">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 tracking-tight flex items-center gap-2">
+        <i class="fas fa-chart-pie text-indigo-500"></i> Rekap Kehadiran Saya
+      </h2>
+      <p class="text-sm text-gray-500 mt-1">Ringkasan kehadiran pada rentang tanggal yang dipilih.</p>
+    </div>
+  </div>
+
+  <!-- Filter Tanggal -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Dari Tanggal</label>
+        <input type="date" id="rekapSiswaTglMulai" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-indigo-400 outline-none bg-gray-50 focus:bg-white transition">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Sampai Tanggal</label>
+        <input type="date" id="rekapSiswaTglAkhir" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-indigo-400 outline-none bg-gray-50 focus:bg-white transition">
+      </div>
+      <div class="col-span-2 md:col-span-2">
+        <button onclick="fetchRekapKehadiranSiswa()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+          <i class="fas fa-search"></i> Tampilkan Rekap
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kotak Rekap Berwarna -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+    <div class="rounded-2xl p-5 bg-emerald-50 border border-emerald-100 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Hadir</span>
+        <div class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-check"></i></div>
+      </div>
+      <p id="rekapSiswaHadir" class="text-3xl font-bold text-emerald-700">0</p>
+      <p class="text-[10px] text-emerald-500 mt-1">hari hadir</p>
+    </div>
+
+    <div id="boxRekapSiswaSakit" onclick="showDetailKehadiranSiswa('Sakit')"
+         class="rounded-2xl p-5 bg-amber-50 border border-amber-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Sakit</span>
+        <div class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-briefcase-medical"></i></div>
+      </div>
+      <p id="rekapSiswaSakit" class="text-3xl font-bold text-amber-700">0</p>
+      <p class="text-[10px] text-amber-500 mt-1"><i class="fas fa-hand-pointer mr-1"></i>klik untuk lihat tanggal</p>
+    </div>
+
+    <div id="boxRekapSiswaIzin" onclick="showDetailKehadiranSiswa('Izin')"
+         class="rounded-2xl p-5 bg-blue-50 border border-blue-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Izin</span>
+        <div class="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-file-alt"></i></div>
+      </div>
+      <p id="rekapSiswaIzin" class="text-3xl font-bold text-blue-700">0</p>
+      <p class="text-[10px] text-blue-500 mt-1"><i class="fas fa-hand-pointer mr-1"></i>klik untuk lihat tanggal</p>
+    </div>
+
+    <div id="boxRekapSiswaAlpa" onclick="showDetailKehadiranSiswa('Alpa')"
+         class="rounded-2xl p-5 bg-rose-50 border border-rose-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold text-rose-600 uppercase tracking-wider">Alpa</span>
+        <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-times"></i></div>
+      </div>
+      <p id="rekapSiswaAlpa" class="text-3xl font-bold text-rose-700">0</p>
+      <p class="text-[10px] text-rose-500 mt-1"><i class="fas fa-hand-pointer mr-1"></i>klik untuk lihat tanggal</p>
+    </div>
+  </div>
+
+  <p id="rekapSiswaInfoText" class="text-xs text-gray-400 text-center mt-2"></p>
+</div>
+
+<div id="view-data-siswa" class="view-section animate-fade-in">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      
+      <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50/30">
+        <div>
+            <h3 class="font-bold text-sm text-gray-800">Direktori Siswa</h3>
+            <p class="text-xs text-gray-500">Kelola data siswa, kelas, dan cetak kartu.</p>
+        </div>
+        
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            <button onclick="refreshData('siswa')" class="bg-white text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 hover:text-indigo-600 transition" title="Perbarui Data">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            
+            <button onclick="downloadTemplate('siswa')" class="bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-amber-600 transition transform active:scale-95" title="Download Template Excel">
+                <i class="fas fa-download mr-1"></i> Template
+            </button>
+
+            <button onclick="downloadKartuSiswaBulk()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-indigo-700 transition transform active:scale-95">
+                <i class="fas fa-id-card mr-1"></i> Cetak Kartu
+            </button>
+
+            <button onclick="triggerImportSiswa()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition transform active:scale-95">
+                <i class="fas fa-file-excel mr-1"></i> Import Excel
+            </button>
+            <input type="file" id="fileInputSiswa" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileImportSiswa(this)">
+
+            <button onclick="showAddSiswaModal()" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-700 transition transform active:scale-95">
+                <i class="fas fa-plus mr-1"></i> Tambah
+            </button>
+        </div>
+      </div>
+
+      <div class="p-4 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+          
+          <div class="flex flex-col sm:flex-row items-center gap-3 text-xs w-full md:w-auto">
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                  <span class="text-gray-500 font-bold whitespace-nowrap">Show</span>
+                  <select onchange="handleTableLimit('siswa', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 w-full sm:w-auto cursor-pointer">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                      <option value="all">Semua</option>
+                  </select>
+              </div>
+
+              <select id="filterKelasSiswa" onchange="handleTableClassFilter('siswa', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 w-full sm:w-40 font-bold shadow-sm cursor-pointer">
+                    <option value="">Semua Kelas</option>
+              </select>
+          </div>
+
+          <div class="relative w-full md:w-64">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400 text-xs"></i>
+              </div>
+              <input type="text" oninput="handleTableSearch('siswa', this.value)" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2 transition-all" placeholder="Cari Nama / NIS...">
+          </div>
+      </div>
+
+      <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+              <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold border-b border-gray-200">
+                  <tr>
+                      <th class="p-3 text-center w-12">No</th>
+                      <th class="p-3">Nama Lengkap</th>
+                      <th class="p-3 hidden md:table-cell">NIS</th>
+                      <th class="p-3 hidden sm:table-cell">Kelas</th>
+                      <th class="p-3 text-center w-40">Aksi</th>
+                  </tr>
+              </thead>
+              <tbody id="tbody-siswa" class="divide-y divide-gray-50 bg-white text-xs text-gray-700">
+                  </tbody>
+          </table>
+      </div>
+
+      <div id="footer-siswa" class="p-4 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center text-xs text-gray-500">
+          <span id="info-siswa">Menampilkan 0 data</span>
+          <div class="flex gap-1">
+              <button onclick="changePage('siswa', -1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition shadow-sm" id="btn-prev-siswa">Prev</button>
+              <button onclick="changePage('siswa', 1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition shadow-sm" id="btn-next-siswa">Next</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div id="view-data-guru" class="view-section animate-fade-in">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      
+      <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+          <div>
+              <h3 class="font-bold text-sm text-gray-800">Manajemen Guru</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="refreshData('guru')" class="bg-white text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 hover:text-purple-600 transition" title="Perbarui Data">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            
+            <button onclick="downloadTemplate('guru')" class="bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-amber-600 transition transform active:scale-95" title="Download Template Excel">
+                <i class="fas fa-download mr-1"></i> Template
+            </button>
+
+            <button onclick="triggerImportGuru()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition">
+                <i class="fas fa-file-excel mr-1"></i> Import Excel
+            </button>
+            <input type="file" id="fileInputGuru" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileImportGuru(this)">
+          
+            <button onclick="showAddGuruModal()" class="bg-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-purple-700 transition">
+                <i class="fas fa-plus mr-1"></i> Tambah
+            </button>
+          </div>
+      </div>
+
+      <div class="p-4 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+          
+          <div class="flex flex-col sm:flex-row items-center gap-3 text-xs w-full md:w-auto">
+              <div class="flex items-center gap-2">
+                  <span class="text-gray-500 font-bold">Show</span>
+                  <select onchange="handleTableLimit('guru', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="all">Semua</option>
+                  </select>
+              </div>
+
+              <select id="filterKelasGuru" onchange="handleTableClassFilter('guru', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2 w-full sm:w-40 font-bold shadow-sm">
+                    <option value="">Semua Kelas</option>
+              </select>
+          </div>
+
+          <div class="relative w-full md:w-64">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400 text-xs"></i>
+              </div>
+              <input type="text" oninput="handleTableSearch('guru', this.value)" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full pl-10 p-2" placeholder="Cari Username...">
+          </div>
+      </div>
+
+      <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold">
+                <tr>
+                    <th class="p-3 text-center w-10">No</th>
+                    <th class="p-3">Username</th>
+                    <th class="p-3">Wali Kelas</th>
+                    <th class="p-3">Password</th>
+                    <th class="p-3 text-center">Aksi</th>
+                </tr>
+            </thead>
+              <tbody id="tbody-guru" class="divide-y divide-gray-50 bg-white text-xs">
+                  </tbody>
+          </table>
+      </div>
+
+      <div id="footer-guru" class="p-4 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center text-xs text-gray-500">
+          <span id="info-guru">Menampilkan 0 data</span>
+          <div class="flex gap-1">
+              <button onclick="changePage('guru', -1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition" id="btn-prev-guru">Prev</button>
+              <button onclick="changePage('guru', 1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition" id="btn-next-guru">Next</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- ====================================================== -->
+<!-- VIEW: INPUT PELANGGARAN (Guru)                         -->
+<!-- ====================================================== -->
+<div id="view-pelanggaran" class="view-section animate-fade-in">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+      <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50/30">
+        <div>
+            <h3 class="font-bold text-sm text-gray-800">Data Pelanggaran Siswa</h3>
+            <p class="text-xs text-gray-500">Catat dan pantau pelanggaran yang dilakukan siswa.</p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            <button onclick="refreshPelanggaran()" class="bg-white text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 hover:text-red-600 transition" title="Perbarui Data">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+
+            <button onclick="showAddPelanggaranModal()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-700 transition transform active:scale-95">
+                <i class="fas fa-plus mr-1"></i> Tambah Pelanggaran
+            </button>
+
+            <button onclick="exportPelanggaranExcel()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition transform active:scale-95">
+                <i class="fas fa-file-excel mr-1"></i> Export Excel
+            </button>
+        </div>
+      </div>
+
+      <div class="p-4 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+
+          <div class="flex flex-col sm:flex-row items-center gap-3 text-xs w-full md:w-auto">
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                  <span class="text-gray-500 font-bold whitespace-nowrap">Show</span>
+                  <select onchange="handleTableLimit('pelanggaran', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block p-2 w-full sm:w-auto cursor-pointer">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                      <option value="all">Semua</option>
+                  </select>
+              </div>
+
+              <select id="filterKelasPelanggaran" onchange="handleTableClassFilter('pelanggaran', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block p-2 w-full sm:w-40 font-bold shadow-sm cursor-pointer">
+                    <option value="">Semua Kelas</option>
+              </select>
+
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                  <input type="date" id="plgFilterDari" onchange="handlePelanggaranDateFilter()" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block p-2 w-full sm:w-auto">
+                  <span class="text-gray-400 text-xs">s/d</span>
+                  <input type="date" id="plgFilterSampai" onchange="handlePelanggaranDateFilter()" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block p-2 w-full sm:w-auto">
+              </div>
+          </div>
+
+          <div class="relative w-full md:w-64">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400 text-xs"></i>
+              </div>
+              <input type="text" oninput="handleTableSearch('pelanggaran', this.value)" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block w-full pl-10 p-2 transition-all" placeholder="Cari Nama / NIS / Kode...">
+          </div>
+      </div>
+
+      <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+              <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold border-b border-gray-200">
+                  <tr>
+                      <th class="p-3 text-center w-12">No</th>
+                      <th class="p-3">Tanggal</th>
+                      <th class="p-3">Nama Siswa</th>
+                      <th class="p-3 hidden md:table-cell">NIS</th>
+                      <th class="p-3 hidden sm:table-cell">Kelas</th>
+                      <th class="p-3">Kode</th>
+                      <th class="p-3">Jenis Pelanggaran</th>
+                      <th class="p-3 text-center">Point</th>
+                      <th class="p-3 hidden lg:table-cell">Diinput Oleh</th>
+                      <th class="p-3 text-center w-20">Aksi</th>
+                  </tr>
+              </thead>
+              <tbody id="tbody-pelanggaran" class="divide-y divide-gray-50 bg-white text-xs text-gray-700">
+                  </tbody>
+          </table>
+      </div>
+
+      <div id="footer-pelanggaran" class="p-4 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center text-xs text-gray-500">
+          <span id="info-pelanggaran">Menampilkan 0 data</span>
+          <div class="flex gap-1">
+              <button onclick="changePage('pelanggaran', -1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition shadow-sm" id="btn-prev-pelanggaran">Prev</button>
+              <button onclick="changePage('pelanggaran', 1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition shadow-sm" id="btn-next-pelanggaran">Next</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- ====================================================== -->
+<!-- VIEW: MONITORING PELANGGARAN (Guru)                    -->
+<!-- ====================================================== -->
+<div id="view-monitoring-pelanggaran" class="view-section animate-fade-in hidden">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+      <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+          <div>
+              <h3 class="font-bold text-sm text-gray-800">Monitoring Pelanggaran</h3>
+              <p class="text-xs text-gray-400 mt-0.5">Rekap total point pelanggaran siswa & status penyelesaian</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="loadMonitoringPelanggaran()" class="bg-white text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 hover:text-red-600 transition" title="Perbarui Data">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="p-4 bg-white border-b border-gray-100 flex flex-col md:flex-row gap-3">
+          <div class="relative w-full md:w-64">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400 text-xs"></i>
+              </div>
+              <input type="text" id="mtSearchInput" oninput="mtFilterList()" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block w-full pl-10 p-2" placeholder="Cari Nama / NIS / Kelas...">
+          </div>
+          <div class="w-full md:w-56">
+              <select id="mtFilterPoint" onchange="mtFilterList()" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2">
+                  <option value="">Semua Point</option>
+                  <option value="0-25">Point 0 - 25</option>
+                  <option value="26-50">Point 26 - 50</option>
+                  <option value="51-75">Point 51 - 75</option>
+                  <option value="76-100">Point 76 - 100</option>
+              </select>
+          </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold border-b border-gray-200">
+            <tr>
+              <th class="p-3 text-center w-12">No</th>
+              <th class="p-3">Nama Siswa</th>
+              <th class="p-3 hidden sm:table-cell">Kelas</th>
+              <th class="p-3 hidden md:table-cell">NIS</th>
+              <th class="p-3 text-center">Total Point</th>
+              <th class="p-3 text-center">Keterangan</th>
+              <th class="p-3 text-center w-20">Detail</th>
+            </tr>
+          </thead>
+          <tbody id="mtTbody" class="divide-y divide-gray-50 bg-white text-xs text-gray-700">
+            <tr><td colspan="7" class="p-8 text-center text-gray-400"><i class="fas fa-circle-notch fa-spin mr-2"></i>Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+
+<!-- ====================================================== -->
+<!-- VIEW: MANAJEMEN KELAS (Admin)                          -->
+<!-- ====================================================== -->
+<div id="view-manajemen-kelas" class="view-section animate-fade-in hidden">
+
+  
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- KIRI: Form Tambah -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-24">
+        <div class="p-5 border-b border-gray-100" style="background: linear-gradient(135deg,#eef2ff,#f5f3ff)">
+          <div class="flex items-center gap-3">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-plus text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800 text-sm">Tambah Kelas Baru</h3>
+              <p class="text-[10px] text-gray-500 mt-0.5">Daftarkan kelas ke sistem</p>
+            </div>
+          </div>
+        </div>
+        <div class="p-5">
+          <div class="mb-4">
+            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Nama Kelas</label>
+            <input type="text" id="inputNamaKelas" placeholder="Contoh: 10-A, XII IPA 1..."
+              onkeydown="if(event.key==='Enter') mkTambahKelas()"
+              class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 focus:border-indigo-500 focus:ring-0 outline-none transition bg-gray-50 focus:bg-white">
+            <p class="text-[10px] text-gray-400 mt-1.5"><i class="fas fa-info-circle mr-1"></i>Gunakan format konsisten, misal: 10-A, 11-B</p>
+          </div>
+          <button onclick="mkTambahKelas()" id="btnTambahKelas"
+            class="w-full py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition active:scale-95"
+            style="background: linear-gradient(135deg,#6366f1,#8b5cf6); box-shadow: 0 4px 14px rgba(99,102,241,.3)">
+            <i class="fas fa-plus-circle"></i> Tambah Kelas
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="px-5 pb-5">
+          <div class="rounded-xl p-4" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0">
+            <p class="text-[10px] font-bold text-green-700 uppercase tracking-wider mb-1">Total Kelas Terdaftar</p>
+            <p class="text-3xl font-black text-green-600" id="mkTotalKelas">—</p>
+            <p class="text-[10px] text-green-600 mt-1" id="mkTotalSiswa">— siswa terdaftar</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KANAN: Daftar Kelas -->
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-gray-800">Daftar Kelas</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Kelola semua kelas yang terdaftar di sistem.</p>
+          </div>
+          <button onclick="mkLoadKelas()"
+            class="flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+            <input type="text" id="mkSearchKelas" placeholder="Cari kelas..."
+              oninput="mkFilterKelas()"
+              class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:bg-white focus:border-indigo-400 outline-none transition">
+          </div>
+        </div>
+
+        <!-- List -->
+        <div id="mkKelasList" class="p-4 space-y-2.5 overflow-y-auto" style="max-height:60vh;">
+          <div class="text-center py-10 text-gray-400">
+            <i class="fas fa-circle-notch fa-spin text-2xl mb-3 block"></i>
+            <p class="text-sm">Memuat data kelas...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="view-manajemen-pelanggaran" class="view-section animate-fade-in hidden">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+      <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+          <div>
+              <h3 class="font-bold text-sm text-gray-800">Manajemen Pelanggaran</h3>
+              <p class="text-xs text-gray-400 mt-0.5">Kelola master data Kode, Jenis, dan Point Pelanggaran</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="mpLoadList()" class="bg-white text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 hover:text-red-600 transition" title="Perbarui Data">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button onclick="showAddPelanggaranMasterModal()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-700 transition">
+                <i class="fas fa-plus mr-1"></i> Tambah
+            </button>
+          </div>
+      </div>
+
+      <div class="p-4 bg-white border-b border-gray-100">
+          <div class="relative w-full md:w-64">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400 text-xs"></i>
+              </div>
+              <input type="text" id="mpSearchInput" oninput="mpFilterList()" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-red-500 focus:border-red-500 block w-full pl-10 p-2" placeholder="Cari Kode / Jenis Pelanggaran...">
+          </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+            <tr>
+              <th class="p-3">Kode Pelanggaran</th>
+              <th class="p-3">Jenis Pelanggaran</th>
+              <th class="p-3 text-center">Point</th>
+              <th class="p-3 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="mpTbody">
+            <tr><td colspan="4" class="p-8 text-center text-gray-400"><i class="fas fa-circle-notch fa-spin mr-2"></i>Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+
+<div id="view-kelola-absen" class="view-section animate-fade-in">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <div class="lg:col-span-1">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-24">
+              <div class="p-5 border-b border-gray-100 bg-indigo-50/50">
+                  <h3 class="font-bold text-gray-800 flex items-center">
+                      <i class="fas fa-clock text-indigo-600 mr-2"></i> Pengaturan Waktu
+                  </h3>
+                  <p class="text-xs text-gray-500 mt-1">Konfigurasi jam operasional presensi.</p>
+              </div>
+              <div class="p-4">
+                  <form onsubmit="saveGlobalConfig(event)">
+                      <div class="space-y-2" id="jadwal-hari-container">
+                          <!-- Akan di-render oleh JS loadGlobalConfig() -->
+                          <div class="text-center py-6 text-gray-400 text-xs"><i class="fas fa-circle-notch fa-spin mr-2"></i>Memuat jadwal...</div>
+                      </div>
+                      <button type="submit" id="btnSaveConfig" class="w-full mt-4 bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-indigo-700 transition transform active:scale-95 flex items-center justify-center gap-2">
+                          <i class="fas fa-save"></i> Simpan Pengaturan
+                      </button>
+                  </form>
+              </div>
+          </div>
+      </div>
+
+      <div class="lg:col-span-2">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-5 border-b border-gray-100 bg-gray-50/30 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-gray-800">Daftar Hari Libur</h3>
+                    <p class="text-xs text-gray-500 mt-1">Siswa tidak bisa absen pada tanggal ini.</p>
+                </div>
+                <div>
+                    <button onclick="triggerImportLibur()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition">
+                        <i class="fas fa-file-excel mr-1"></i> Import Excel
+                    </button>
+                    <input type="file" id="fileInputLibur" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileImportLibur(this)">
+                </div>
+            </div>
+
+              <div class="p-5 border-b border-gray-100">
+                  <form onsubmit="handleAddLibur(event)" class="flex flex-col gap-3">
+                      <div class="flex flex-col md:flex-row gap-3">
+                          <div class="flex-1">
+                              <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tanggal Mulai</label>
+                              <input type="date" name="tanggal_mulai" id="input-libur-mulai" required
+                                  class="w-full border-gray-300 rounded-lg text-sm p-2.5"
+                                  onchange="updatePreviewLibur()">
+                          </div>
+                          <div class="flex-1">
+                              <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tanggal Akhir</label>
+                              <input type="date" name="tanggal_akhir" id="input-libur-akhir" required
+                                  class="w-full border-gray-300 rounded-lg text-sm p-2.5"
+                                  onchange="updatePreviewLibur()">
+                          </div>
+                          <div class="flex-[2]">
+                              <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Keterangan</label>
+                              <input type="text" name="keterangan" required placeholder="Contoh: Maulid Nabi / Libur Semester" class="w-full border-gray-300 rounded-lg text-sm p-2.5">
+                          </div>
+                      </div>
+                      <div id="preview-libur" class="hidden bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-xs text-amber-700 flex items-center gap-2">
+                          <i class="fas fa-calendar-alt text-amber-500"></i>
+                          <span id="preview-libur-text"></span>
+                      </div>
+                      <button type="submit" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-emerald-700 transition w-full md:w-auto self-end">
+                          <i class="fas fa-plus mr-1"></i> Tambah
+                      </button>
+                  </form>
+              </div>
+
+              <div class="overflow-x-auto">
+                  <table class="w-full text-left">
+                      <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold">
+                          <tr>
+                              <th class="p-4 w-10 text-center">No</th>
+                              <th class="p-4">Tanggal</th>
+                              <th class="p-4">Keterangan</th>
+                              <th class="p-4 text-center w-20">Aksi</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tbody-libur" class="divide-y divide-gray-50 text-sm"></tbody>
+                  </table>
+              </div>
+
+              <div id="footer-libur" class="p-4 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center text-xs text-gray-500">
+                  <span id="info-libur">Menampilkan 0 data</span>
+                  <div class="flex gap-1">
+                      <button onclick="changePage('libur', -1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" id="btn-prev-libur">Prev</button>
+                      <button onclick="changePage('libur', 1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" id="btn-next-libur">Next</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div id="view-monitoring" class="view-section animate-fade-in">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center bg-gray-50/30 gap-4">
+            <div>
+                <h3 class="font-bold text-sm text-gray-800 mb-1">Monitoring Kehadiran</h3>
+                <p class="text-xs text-gray-500 font-medium">Data Realtime: <span id="monitoringDate" class="text-indigo-600 font-bold">...</span></p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
+                <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-gray-200 shadow-sm w-full md:w-auto justify-center">
+                    <input type="date" id="exportMonStart" class="text-xs border-none focus:ring-0 text-gray-600 font-bold p-1 rounded bg-transparent cursor-pointer" title="Tanggal Mulai">
+                    <span class="text-gray-400 text-[10px]">-</span>
+                    <input type="date" id="exportMonEnd" class="text-xs border-none focus:ring-0 text-gray-600 font-bold p-1 rounded bg-transparent cursor-pointer" title="Tanggal Akhir">
+                </div>
+
+                <button onclick="exportMonitoringExcel()" id="btnExportMonitoring" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition transform active:scale-95 flex items-center gap-2 w-full md:w-auto justify-center">
+                    <i class="fas fa-file-excel"></i> <span class="hidden sm:inline">Export Excel</span>
+                </button>
+
+                <button onclick="refreshData('monitoring')" class="bg-white text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 hover:text-indigo-600 transition w-full md:w-auto" title="Perbarui Data">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="flex flex-col sm:flex-row items-center gap-2 text-xs w-full md:w-auto">
+                
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <span class="text-gray-500 font-bold hidden sm:inline">Show</span>
+                    <select onchange="handleTableLimit('monitoring', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 w-full sm:w-auto cursor-pointer">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="all">Semua</option>
+                    </select>
+                </div>
+
+                <select onchange="handleTableStatusFilter('monitoring', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 font-bold w-full sm:w-auto shadow-sm cursor-pointer">
+                    <option value="">Semua Status</option>
+                    <option value="Hadir">Hadir (Hijau)</option>
+                    <option value="Sakit">Sakit (Kuning)</option>
+                    <option value="Izin">Izin (Biru)</option>
+                    <option value="Alpa">Alpa (Merah)</option>
+                    <option value="Belum Absen">Belum Absen (Abu)</option>
+                </select>
+
+                <select id="filterKelasMonitoring" onchange="handleTableClassFilter('monitoring', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 font-bold w-full sm:w-auto shadow-sm cursor-pointer">
+                    <option value="">Semua Kelas</option>
+                </select>
+            </div>
+
+            <div class="relative w-full md:w-64">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400 text-xs"></i>
+                </div>
+                <input type="text" oninput="handleTableSearch('monitoring', this.value)" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2 transition-all" placeholder="Cari Nama / Kelas...">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold">
+                  <tr>
+                      <th class="p-4 text-center w-10">No</th>
+                      <th class="p-4">Siswa</th>
+                      <th class="p-4 text-center">Kelas</th>
+                      <th class="p-4 text-center">Jam Datang</th>
+                      <th class="p-4 text-center">Jam Pulang</th>
+                      <th class="p-4 text-center">Keterangan Waktu</th>
+                      <th class="p-4 text-center">Status Kehadiran</th>
+                  </tr>
+              </thead>
+              <tbody id="tbody-monitoring" class="divide-y divide-gray-50 bg-white text-sm">
+                  </tbody>
+            </table>
+        </div>
+
+        <div id="footer-monitoring" class="p-4 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center text-xs text-gray-500">
+            <span id="info-monitoring">Menampilkan 0 data</span>
+            <div class="flex gap-1">
+                <button onclick="changePage('monitoring', -1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition" id="btn-prev-monitoring">Prev</button>
+                <button onclick="changePage('monitoring', 1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50 transition" id="btn-next-monitoring">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="view-rekap-bulanan" class="view-section animate-fade-in hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-indigo-50/30">
+            <div>
+                <h3 class="font-bold text-gray-800">Rekapitulasi Bulanan</h3>
+                <p class="text-xs text-gray-500">Matriks kehadiran siswa per bulan</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 justify-end w-full md:w-auto">
+                <select id="rekapKelas" class="bg-white border border-gray-200 text-gray-700 text-xs rounded-lg p-2 font-bold focus:ring-indigo-500 shadow-sm cursor-pointer w-full md:w-auto">
+                    <option value="">Semua Kelas</option>
+                </select>
+
+                <select id="rekapBulan" class="bg-white border border-gray-200 text-gray-700 text-xs rounded-lg p-2 font-bold focus:ring-indigo-500 shadow-sm cursor-pointer w-1/2 md:w-auto">
+                    <option value="0">Januari</option>
+                    <option value="1">Februari</option>
+                    <option value="2">Maret</option>
+                    <option value="3">April</option>
+                    <option value="4">Mei</option>
+                    <option value="5">Juni</option>
+                    <option value="6">Juli</option>
+                    <option value="7">Agustus</option>
+                    <option value="8">September</option>
+                    <option value="9">Oktober</option>
+                    <option value="10">November</option>
+                    <option value="11">Desember</option>
+                </select>
+
+                <select id="rekapTahun" class="bg-white border border-gray-200 text-gray-700 text-xs rounded-lg p-2 font-bold focus:ring-indigo-500 shadow-sm cursor-pointer w-1/3 md:w-auto">
+                    </select>
+
+                <button onclick="loadDataRekapBulanan()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                    <i class="fas fa-search"></i> <span class="hidden sm:inline">Tampilkan</span>
+                </button>
+
+                <button onclick="exportRekapBulananExcel()" id="btnExportRekap" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-700 transition shadow-sm flex items-center gap-2">
+                    <i class="fas fa-file-excel"></i> <span class="hidden sm:inline">Export</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto relative">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead class="bg-gray-100 text-gray-600 uppercase font-bold sticky top-0 z-10">
+                    <tr id="thead-rekap-bulanan">
+                        </tr>
+                </thead>
+                <tbody id="tbody-rekap-bulanan" class="divide-y divide-gray-100 bg-white">
+                    <tr><td class="p-8 text-center text-gray-500" colspan="10">Silakan pilih filter dan klik Tampilkan.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="p-3 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-4 text-[10px] font-bold text-gray-500 justify-center">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> H: Hadir</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-400"></span> S: Sakit</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-400"></span> I: Izin</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> A: Alpha</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-red-100 border border-red-200"></span> Libur</span>
+        </div>
+
+        <div class="p-4 bg-indigo-50 border-t border-indigo-100 text-xs text-indigo-900">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <h4 class="font-bold mb-2 flex items-center gap-2 text-indigo-700">
+                        <i class="fas fa-calculator"></i> Rumus Persentase
+                    </h4>
+                    <div class="bg-white p-3 rounded-lg border border-indigo-100 shadow-sm">
+                        <code class="font-mono text-indigo-600 font-bold text-sm block text-center mb-1">
+                            (Jumlah Hadir / Hari Efektif) × 100%
+                        </code>
+                        <p class="text-[10px] text-center text-gray-400">Contoh: (1 Hadir / 10 Hari Efektif) × 100 = 10%</p>
+                    </div>
+                </div>
+
+                <div class="flex-[2]">
+                    <h4 class="font-bold mb-2 flex items-center gap-2 text-indigo-700">
+                        <i class="fas fa-info-circle"></i> Penjelasan Istilah
+                    </h4>
+                    <ul class="space-y-1.5 text-gray-600">
+                        <li class="flex gap-2">
+                            <span class="font-bold text-indigo-600 w-24 shrink-0">Hari Efektif :</span>
+                            <span>Jumlah total hari dalam bulan berjalan yang <b>sudah berlalu</b> dikurangi Hari Minggu dan Hari Libur Nasional. Hari masa depan (besok dst) tidak dihitung.</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="font-bold text-indigo-600 w-24 shrink-0">Status Alpha :</span>
+                            <span>Siswa dianggap Alpha jika hari tersebut adalah <b>Hari Efektif</b> (sekolah masuk) namun siswa tidak melakukan scan kehadiran.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="view-kenaikan-kelas" class="view-section animate-fade-in hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <div class="p-4 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-indigo-900"><i class="fas fa-level-up-alt mr-2"></i>Proses Kenaikan Kelas</h3>
+                <p class="text-xs text-indigo-600">Pilih kelas asal dan tujuan, lalu tentukan siswa yang naik/tinggal.</p>
+            </div>
+            <button onclick="showModalArsip()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-emerald-700 transition">
+                <i class="fas fa-archive mr-1"></i> Tutup Tahun (Arsip)
+            </button>
+        </div>
+
+        <div class="p-4">
+            <div class="flex flex-col md:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Kelas Asal (Sekarang)</label>
+                    <select id="promoKelasAsal" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 font-bold text-gray-700">
+                        <option value="">-- Pilih Kelas --</option>
+                        </select>
+                </div>
+                
+                <div class="flex items-center justify-center pt-4">
+                    <i class="fas fa-arrow-right text-gray-400"></i>
+                </div>
+
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Naik Ke Kelas (Tujuan)</label>
+                    <select id="promoKelasTujuan" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 font-bold text-indigo-700">
+                        <option value="">-- Pilih Tujuan --</option>
+                        <option value="LULUS" class="font-bold text-green-600">🎓 LULUS (Alumni)</option>
+                        </select>
+                </div>
+
+                <div class="flex items-end">
+                    <button onclick="loadSiswaUntukPromosi()" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md h-[38px]">
+                        <i class="fas fa-users mr-2"></i> Load Siswa
+                    </button>
+                </div>
+            </div>
+
+            <div id="container-promo-siswa" class="hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-sm text-gray-700">Daftar Siswa</h4>
+                    <div class="text-xs space-x-2">
+                        <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span> Naik/Lulus</span>
+                        <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-red-500 mr-1"></span> Tinggal Kelas</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto border border-gray-200 rounded-lg max-h-[400px]">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-100 text-gray-600 font-bold sticky top-0 z-10">
+                            <tr>
+                                <th class="p-3 w-10 text-center">No</th>
+                                <th class="p-3">Nama Siswa</th>
+                                <th class="p-3">NIS</th>
+                                <th class="p-3 text-center">Status Keputusan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-promo-siswa" class="divide-y divide-gray-100 bg-white">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800 mb-4 flex items-start gap-2">
+                    <i class="fas fa-info-circle mt-0.5"></i>
+                    <div>
+                        <strong>Keterangan:</strong><br>
+                        - Siswa dengan status <b>"Naik Kelas"</b> akan dipindahkan ke <b>Kelas Tujuan</b>.<br>
+                        - Siswa dengan status <b>"Tinggal Kelas"</b> akan tetap berada di <b>Kelas Asal</b>.
+                    </div>
+                </div>
+
+                <button onclick="executePromotion()" id="btn-eksekusi-promo" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg text-sm">
+                    <i class="fas fa-check-double mr-2"></i> Simpan & Proses Kenaikan Kelas
+                </button>
+            </div>
+            
+            <div id="promo-placeholder" class="text-center py-12 text-gray-400">
+                <i class="fas fa-chalkboard-teacher text-4xl mb-3 opacity-30"></i>
+                <p>Silakan pilih kelas asal dan tujuan untuk memulai.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================== -->
+<!-- VIEW: PRESENSI SHOLAT                                   -->
+<!-- ====================================================== -->
+<div id="view-presensi-sholat" class="view-section animate-fade-in">
+
+  <!-- Header Halaman -->
+  <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-3">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 tracking-tight flex items-center gap-2">
+        <span class="text-2xl">🕌</span> Presensi Sholat
+      </h2>
+      <p class="text-sm text-gray-500 mt-1">Catat kehadiran sholat berjamaah siswa per kelas.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="loadRekapSholatView()" class="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-lg hover:bg-emerald-100 transition">
+        <i class="fas fa-chart-bar"></i> Lihat Rekap
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab: Input / Rekap -->
+  <div id="sholatInputSection">
+    <!-- Filter Bar -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Tanggal</label>
+          <input type="date" id="sholatTanggal" onchange="onSholatFilterChange()" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-emerald-400 outline-none bg-gray-50 focus:bg-white transition">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Waktu Sholat</label>
+          <div class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 bg-gray-100 text-gray-500 font-semibold flex items-center gap-1.5">☀️ Dzuhur</div>
+          <input type="hidden" id="sholatWaktu" value="Dzuhur">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Kelas</label>
+          <select id="sholatKelas" onchange="onSholatFilterChange()" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-emerald-400 outline-none bg-gray-50 focus:bg-white transition">
+            <option value="">-- Pilih Kelas --</option>
+          </select>
+        </div>
+        <div>
+          <button onclick="onSholatFilterChange()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+            <i class="fas fa-search"></i> Tampilkan Siswa
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+
+      <!-- Kiri: Tabel Siswa -->
+      <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-emerald-700 to-teal-700 p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              <i class="fas fa-mosque text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-white">Daftar Siswa</h3>
+              <p class="text-emerald-200 text-[10px]" id="sholatSubtitle">Pilih filter untuk menampilkan siswa</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="sholatCounter" class="text-[10px] bg-white/20 text-white px-2 py-1 rounded-lg font-bold">0 / 0 hadir</span>
+            <button onclick="sholatTandaiSemua('Hadir')" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-2 py-1.5 rounded-lg transition border border-white/20">
+              ✓ Semua Hadir
+            </button>
+            <button onclick="sholatTandaiSemua('Tidak Hadir')" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-2 py-1.5 rounded-lg transition border border-white/20">
+              ✗ Semua Absen
+            </button>
+          </div>
+        </div>
+
+        <div id="sholatSubmittedBanner" class="hidden bg-emerald-50 border-b border-emerald-200 px-4 py-2 flex items-center gap-2">
+          <i class="fas fa-check-circle text-emerald-500 text-xs"></i>
+          <p class="text-[10px] text-emerald-700 font-semibold">Data ini sudah pernah disimpan. Menyimpan ulang akan menimpa data lama.</p>
+        </div>
+
+        <div class="overflow-y-auto" style="max-height:60vh;">
+          <table class="w-full text-sm">
+            <thead class="sticky top-0 z-10">
+              <tr class="bg-gray-50 border-b border-gray-100">
+                <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase w-8">#</th>
+                <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Nama Siswa</th>
+                <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase">Status</th>
+                <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Keterangan</th>
+              </tr>
+            </thead>
+            <tbody id="sholatTbody">
+              <tr id="sholatEmptyRow">
+                <td colspan="4" class="py-16 text-center">
+                  <div class="flex flex-col items-center gap-3">
+                    <span class="text-5xl">🕌</span>
+                    <p class="text-sm text-gray-400 font-semibold">Pilih tanggal, waktu sholat, dan kelas</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Submit Footer -->
+        <div class="border-t border-gray-100 p-4 bg-gray-50/50 flex items-center justify-between">
+          <span class="text-xs text-gray-500" id="sholatInfoText"></span>
+          <button onclick="submitPresensiSholatFront()" id="sholatSubmitBtn"
+            class="hidden bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-sm">
+            <i class="fas fa-paper-plane"></i> Simpan Presensi Sholat
+          </button>
+        </div>
+      </div>
+
+      <!-- Kanan: Info Panel -->
+      <div class="space-y-4">
+        <!-- Scanner QR Sholat -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="bg-gradient-to-r from-emerald-700 to-teal-700 p-4 text-white text-center">
+            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+              <i class="fas fa-qrcode text-lg"></i>
+            </div>
+            <h3 class="font-bold text-sm">Scan QR Siswa</h3>
+            <p class="text-[10px] mt-0.5 opacity-80">Scan tersimpan di perangkat, kirim lewat Sinkron</p>
+          </div>
+          <div class="p-4 space-y-3">
+            <button id="sholatCamBtn" onclick="sholatOpenCameraPopup()"
+              class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+              <i class="fas fa-camera text-base"></i> Buka Kamera Live
+            </button>
+
+            <div id="sholatPollingStatus" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-3">
+              <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-emerald-700">Kamera aktif — menunggu QR...</p>
+                <p class="text-[10px] text-emerald-500 mt-0.5">Scan QR di popup kamera yang terbuka</p>
+              </div>
+              <button onclick="sholatStopPopup()" title="Tutup kamera" class="w-7 h-7 bg-emerald-200 hover:bg-emerald-300 text-emerald-700 rounded-lg flex items-center justify-center transition flex-shrink-0">
+                <i class="fas fa-times text-xs"></i>
+              </button>
+            </div>
+
+            <div id="sholatScanNotif" class="hidden rounded-xl p-3 text-sm font-semibold text-center"></div>
+
+            <div class="flex items-center gap-2 my-1">
+              <div class="flex-1 h-px bg-gray-200"></div>
+              <span class="text-[10px] text-gray-400 font-bold uppercase">atau</span>
+              <div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+            <div>
+              <button onclick="sholatOpenTapKartuPopup()" class="w-full bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-black text-white px-4 py-3.5 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2.5 shadow-lg">
+                <i class="fas fa-id-card text-lg"></i> Tap Kartu Anda
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keterangan Status -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Keterangan Status</p>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 text-xs bg-emerald-50 rounded-lg px-3 py-2 border border-emerald-100">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0"></span>
+              <span class="font-semibold text-emerald-700">Hadir</span>
+              <span class="text-gray-400">— mengikuti sholat berjamaah</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs bg-red-50 rounded-lg px-3 py-2 border border-red-100">
+              <span class="w-3 h-3 rounded-full bg-red-400 flex-shrink-0"></span>
+              <span class="font-semibold text-red-700">Tidak Hadir</span>
+              <span class="text-gray-400">— tidak mengikuti sholat</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
+              <span class="w-3 h-3 rounded-full bg-blue-400 flex-shrink-0"></span>
+              <span class="font-semibold text-blue-700">Izin / Uzur</span>
+              <span class="text-gray-400">— ada keterangan khusus</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waktu Sholat Guide -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Waktu Sholat</p>
+          <div class="space-y-1.5 text-xs text-gray-600">
+            <div class="flex justify-between py-1"><span>☀️ Dzuhur</span><span class="text-gray-400">12:00 – 13:00</span></div>
+          </div>
+        </div>
+
+        <!-- Quick Nav ke Rekap -->
+        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div class="relative z-10 text-center">
+            <div class="text-3xl mb-2">📊</div>
+            <h4 class="font-bold text-sm mb-1">Rekap Sholat</h4>
+            <p class="text-emerald-100 text-xs mb-4">Lihat statistik kehadiran sholat per bulan</p>
+            <button onclick="loadRekapSholatView()" class="bg-white text-emerald-700 px-4 py-2 rounded-xl font-bold text-xs shadow hover:bg-gray-50 transition w-full">
+              Buka Rekap
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REKAP SHOLAT SECTION -->
+  <div id="sholatRekapSection" class="hidden">
+    <div class="flex items-center gap-3 mb-4">
+      <button onclick="showSholatInput()" class="flex items-center gap-2 text-xs font-bold text-gray-600 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition">
+        <i class="fas fa-arrow-left"></i> Kembali Input
+      </button>
+      <h3 class="font-bold text-gray-700 text-sm">Rekap Presensi Sholat</h3>
+    </div>
+
+    <!-- Filter Rekap -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Bulan</label>
+          <input type="month" id="sholatRekapBulan" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-emerald-400 outline-none bg-gray-50">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Filter Kelas</label>
+          <select id="sholatRekapKelas" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-emerald-400 outline-none bg-gray-50">
+            <option value="">Semua Kelas</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Filter Waktu</label>
+          <select id="sholatRekapWaktu" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-emerald-400 outline-none bg-gray-50">
+            <option value="Dzuhur">Dzuhur</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Filter Status</label>
+          <select id="sholatRekapStatus" class="w-full border border-gray-200 rounded-xl text-xs px-3 py-2.5 focus:ring-2 focus:ring-emerald-400 outline-none bg-gray-50">
+            <option value="">Semua Status</option>
+            <option value="Hadir">✓ Hadir</option>
+            <option value="Tidak Hadir">✗ Tidak Hadir</option>
+            <option value="Izin / Uzur">⚬ Izin / Uzur</option>
+            <option value="Belum Absen">⏳ Belum Absen</option>
+          </select>
+        </div>
+        <div>
+          <button onclick="loadRekapSholatData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+            <i class="fas fa-search"></i> Tampilkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4" id="sholatStatCards">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase mb-1">Total Siswa</p>
+        <h3 id="sholatStatTotal" class="text-2xl font-bold text-gray-700">-</h3>
+      </div>
+      <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-100 p-4 text-center">
+        <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Hadir</p>
+        <h3 id="sholatStatHadir" class="text-2xl font-bold text-emerald-700">-</h3>
+      </div>
+      <div class="bg-red-50 rounded-2xl shadow-sm border border-red-100 p-4 text-center">
+        <p class="text-xs text-red-500 font-bold uppercase mb-1">Tidak Hadir | Belum</p>
+        <h3 id="sholatStatTidak" class="text-xl font-bold text-red-700">-</h3>
+      </div>
+      <div class="bg-blue-50 rounded-2xl shadow-sm border border-blue-100 p-4 text-center">
+        <p class="text-xs text-blue-600 font-bold uppercase mb-1">% Kehadiran</p>
+        <h3 id="sholatStatPersen" class="text-2xl font-bold text-blue-700">-</h3>
+        <p class="text-[10px] text-gray-400 mt-0.5">dari total siswa</p>
+      </div>
+    </div>
+
+    <!-- Tabel Rekap -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-700 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-table text-white text-sm"></i>
+          <h3 class="font-bold text-sm text-white">Detail Rekap</h3>
+        </div>
+        <button onclick="exportRekapSholatExcel()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition border border-white/20 flex items-center gap-1">
+          <i class="fas fa-file-excel text-xs"></i> Export Excel
+        </button>
+      </div>
+      <div class="overflow-x-auto" style="max-height:55vh; overflow-y:auto;">
+        <table class="w-full text-xs">
+          <thead class="sticky top-0 z-10 bg-gray-50">
+            <tr class="border-b border-gray-100">
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">#</th>
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Tanggal</th>
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">NIS</th>
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Nama</th>
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Kelas</th>
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Waktu Sholat</th>
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase">Status</th>
+              <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase">Jam Absen</th>
+              <th class="px-3 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="sholatRekapTbody">
+            <tr><td colspan="9" class="py-16 text-center text-gray-400 text-sm">Pilih filter lalu klik Tampilkan</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="view-sinkron-data" class="view-section animate-fade-in hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden max-w-2xl">
+        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-gray-800">Sinkron Data</h2>
+                <p class="text-xs text-gray-400 mt-1">Data yang disimpan saat perangkat offline akan tersimpan di sini dulu, lalu dikirim ke server saat disinkronkan.</p>
+            </div>
+            <span id="sinkronStatusBadge" class="text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full"></span> <span></span>
+            </span>
+        </div>
+
+        <div class="p-6">
+            <div class="flex items-center justify-between bg-gray-50 rounded-xl p-4 mb-5">
+                <div>
+                    <p class="text-2xl font-bold text-gray-800" id="sinkronQueueCount">0</p>
+                    <p class="text-xs text-gray-400">data belum tersinkron</p>
+                </div>
+                <button id="sinkronBtn" onclick="syncOfflineQueue()" class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition flex items-center gap-2">
+                    <i class="fas fa-sync-alt"></i> Sinkron Sekarang
+                </button>
+            </div>
+
+            <div id="sinkronProgressBox" class="hidden mb-5 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-bold text-orange-700 flex items-center gap-1.5" id="sinkronProgressLabel">
+                        <i class="fas fa-cloud-upload-alt animate-pulse"></i> Menyinkronkan...
+                    </p>
+                    <span class="text-xs font-extrabold text-orange-600" id="sinkronProgressPercent">0%</span>
+                </div>
+                <div class="w-full h-3 bg-orange-100 rounded-full overflow-hidden shadow-inner">
+                    <div id="sinkronProgressBar" class="h-full rounded-full bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 shadow-[0_0_10px_rgba(249,115,22,0.6)] transition-all duration-300 ease-out relative overflow-hidden" style="width:0%">
+                        <div class="absolute inset-0 bg-white/30" style="background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);width:60px;animation:sinkronShimmer 1.1s linear infinite"></div>
+                    </div>
+                </div>
+                <p class="text-[11px] text-orange-400 mt-2" id="sinkronProgressDetail">Menyiapkan...</p>
+            </div>
+            <style>
+                @keyframes sinkronShimmer { 0% { transform: translateX(-60px); } 100% { transform: translateX(320px); } }
+            </style>
+
+            <div class="border border-indigo-100 bg-indigo-50/60 rounded-xl p-4 mb-6">
+                <div class="flex items-start justify-between gap-3 flex-wrap">
+                    <div>
+                        <p class="text-sm font-bold text-gray-800 flex items-center gap-2"><i class="fas fa-download text-indigo-500"></i> Download Data Siswa</p>
+                        <p class="text-xs text-gray-500 mt-1">Simpan data siswa & kelas ke perangkat ini sekarang, biar menu Absen Masuk, Absen Pulang, dan Presensi Sholat tetap bisa muat data siswa walau nanti sedang offline.</p>
+                        <p class="text-[11px] text-gray-400 mt-2" id="downloadSiswaLastInfo">Belum pernah diunduh di perangkat ini.</p>
+                    </div>
+                    <button id="downloadSiswaBtn" onclick="downloadDataSiswaOffline()" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:opacity-90 transition flex items-center gap-2 whitespace-nowrap">
+                        <i class="fas fa-download"></i> Download Sekarang
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Antrean Data</p>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportSinkronQueue('csv')" title="Unduh antrean sebagai CSV" class="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-lg font-bold text-[11px] hover:bg-gray-50 flex items-center gap-1.5">
+                        <i class="fas fa-file-csv text-gray-400"></i> CSV
+                    </button>
+                    <button onclick="clearSinkronQueue()" title="Hapus semua antrean yang belum terkirim" class="px-3 py-1.5 bg-white border border-red-200 text-red-600 rounded-lg font-bold text-[11px] hover:bg-red-50 flex items-center gap-1.5">
+                        <i class="fas fa-trash text-red-400"></i> Hapus Antrean
+                    </button>
+                    <button onclick="exportSinkronQueue('excel')" title="Unduh antrean sebagai Excel" class="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-lg font-bold text-[11px] hover:bg-gray-50 flex items-center gap-1.5">
+                        <i class="fas fa-file-excel text-emerald-500"></i> Excel
+                    </button>
+                </div>
+            </div>
+            <div id="sinkronQueueList" class="space-y-2 max-h-96 overflow-y-auto">
+                <p class="text-sm text-gray-400 text-center py-8">Tidak ada data yang mengantre.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="view-rekap-presensi" class="view-section animate-fade-in">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">Laporan Kehadiran</h3>
+                    <p class="text-xs text-gray-500">Rekap data presensi siswa berdasarkan periode.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-3 items-end bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                
+                <div class="w-full md:flex-1">
+                   <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Dari Tanggal</label>
+                   <input type="date" id="fStart" class="w-full border-gray-300 rounded-lg text-xs p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div class="w-full md:flex-1">
+                   <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Sampai Tanggal</label>
+                   <input type="date" id="fEnd" class="w-full border-gray-300 rounded-lg text-xs p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div class="w-full md:flex-1">
+                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Filter Kelas</label>
+                    <select id="fKelasRekap" class="w-full border-gray-300 rounded-lg text-xs p-2.5 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        <option value="">Semua Kelas</option>
+                        </select>
+                </div>
+
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button onclick="applyFilter()" class="flex-1 md:flex-none bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold text-xs shadow-md hover:bg-indigo-700 transition transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fas fa-search"></i> Cari Data
+                    </button>
+                    
+                    <button onclick="exportToExcel()" id="btnExportExcel" class="flex-1 md:flex-none bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-bold text-xs shadow-md hover:bg-emerald-700 transition transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="rekapContainer" class="hidden">
+            <div class="p-4 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="text-gray-500 font-bold">Tampilkan</span>
+                    <select onchange="handleTableLimit('rekap', this.value)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="all">Semua</option>
+                    </select>
+                </div>
+                <div class="relative w-full md:w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400 text-xs"></i>
+                    </div>
+                    <input type="text" oninput="handleTableSearch('rekap', this.value)" class="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2" placeholder="Cari Siswa / Kelas...">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                  <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-semibold">
+                      <tr>
+                          <th class="p-4 text-center w-10">No</th>
+                          <th class="p-4">Tanggal</th>
+                          <th class="p-4">Nama Siswa</th>
+                          <th class="p-4 text-center">Kelas</th>
+                          <th class="p-4 text-center">Jam Datang</th>
+                          <th class="p-4 text-center">Jam Pulang</th>
+                          
+                          <th class="p-4 text-center">Keterangan Waktu</th>
+                          
+                          <th class="p-4 text-center">Status</th>
+                      </tr>
+                  </thead>
+                    <tbody id="tbody-rekap" class="bg-white divide-y divide-gray-50 text-sm"></tbody>
+                </table>
+            </div>
+
+            <div id="footer-rekap" class="p-4 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center text-xs text-gray-500">
+                <span id="info-rekap">Menampilkan 0 data</span>
+                <div class="flex gap-1">
+                    <button onclick="changePage('rekap', -1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" id="btn-prev-rekap">Prev</button>
+                    <button onclick="changePage('rekap', 1)" class="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" id="btn-next-rekap">Next</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="rekapEmptyState" class="text-center p-16 flex flex-col items-center justify-center">
+            <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-200 mb-4 text-4xl">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h4 class="font-bold text-gray-800 text-lg">Menunggu Filter</h4>
+            <p class="text-gray-500 text-sm mt-1 max-w-xs mx-auto">Silakan pilih rentang tanggal mulai dan akhir, lalu klik tombol <b>Cari Data</b>.</p>
+        </div>
+        
+        <div id="rekapLoading" class="hidden text-center p-16 flex flex-col items-center justify-center">
+             <div class="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+             <h4 class="font-bold text-gray-800">Sedang Memproses...</h4>
+             <p class="text-gray-500 text-xs mt-1">Mengambil data dari server</p>
+        </div>
+
+    </div>
+</div>
+              <div id="view-scanner" class="view-section animate-fade-in">
+                  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 max-w-6xl mx-auto items-start">
+
+                      <!-- KOLOM KIRI: Scanner Controls -->
+                      <div class="lg:col-span-2 space-y-4">
+                          <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden">
+                              <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white text-center">
+                                  <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                                      <i class="fas fa-qrcode text-xl"></i>
+                                  </div>
+                                  <h3 class="font-bold text-sm">Scan QR Presensi</h3>
+                                  <p class="text-indigo-100 text-[10px] mt-0.5">Scan semua siswa → Submit sekaligus</p>
+                              </div>
+                              <div class="p-4 space-y-3">
+                                  <button onclick="openCameraPopup()"
+                                      class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white py-4 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-200">
+                                      <i class="fas fa-video text-lg"></i>
+                                      <span>📷 Buka Kamera Live</span>
+                                  </button>
+                                  <p class="text-[10px] text-center text-gray-400">Membuka tab baru — izinkan jika browser memblokir</p>
+                                  <div id="scanCacheStatus" class="hidden text-xs text-center py-1"></div>
+                                  <div id="pollingStatus" class="hidden bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-center">
+                                      <div class="flex items-center justify-center gap-2 text-indigo-600 text-xs font-bold">
+                                          <i class="fas fa-circle-notch fa-spin"></i>
+                                          <span>Menunggu hasil scan dari kamera...</span>
+                                      </div>
+                                  </div>
+
+                                  <div class="flex items-center gap-3"><div class="flex-1 h-px bg-gray-200"></div><span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">atau</span><div class="flex-1 h-px bg-gray-200"></div></div>
+
+                                  <label class="block w-full cursor-pointer">
+                                      <div class="w-full bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-700 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                                          <i class="fas fa-image"></i><span>Pilih Foto QR</span>
+                                      </div>
+                                      <input type="file" id="qrFileInput" accept="image/*" class="hidden" onchange="scanFromFile(this)">
+                                  </label>
+
+                                  <div class="flex items-center gap-3"><div class="flex-1 h-px bg-gray-200"></div><span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">atau</span><div class="flex-1 h-px bg-gray-200"></div></div>
+
+                                  <div>
+                                      <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Input No. Kartu Manual</label>
+                                      <div class="flex gap-2">
+                                          <input type="text" id="manualNis" placeholder="Ketik No. Kartu siswa..."
+                                              class="flex-1 border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 focus:bg-white outline-none transition"
+                                              onkeydown="if(event.key==='Enter') submitManualNis()">
+                                          <button onclick="submitManualNis()" class="bg-gray-900 hover:bg-black text-white px-4 py-3 rounded-xl text-sm font-bold transition shadow-sm">
+                                              <i class="fas fa-check"></i>
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <!-- Info: Simpan Lokal -->
+                          <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 flex items-center gap-2">
+                              <i class="fas fa-mobile-screen-button text-amber-500 text-sm"></i>
+                              <p class="text-[10px] text-amber-700 font-semibold leading-relaxed">Setiap QR berhasil discan, presensi <b>tersimpan di perangkat ini dulu</b>. Klik tombol Sinkron untuk mengirim ke server.</p>
+                          </div>
+
+                          <div id="scanResult" class="hidden animate-fade-in"></div>
+                          <div id="fileResult"></div>
+
+                          <button onclick="stopAndBack(true)"
+                              class="w-full bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl font-bold text-xs hover:bg-gray-50 shadow-sm flex items-center justify-center gap-2">
+                              <i class="fas fa-arrow-left"></i> Kembali
+                          </button>
+                      </div>
+
+                      <!-- KOLOM KANAN: Tabel Antrian Scan -->
+                      <div class="lg:col-span-3 bg-white rounded-2xl shadow border border-gray-100 overflow-hidden flex flex-col" style="max-height: 82vh;">
+                          <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-4 text-white flex items-center justify-between shrink-0">
+                              <div class="flex items-center gap-3">
+                                  <div class="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center"><i class="fas fa-list-check text-sm"></i></div>
+                                  <div>
+                                      <h3 class="font-bold text-sm">Riwayat Scan</h3>
+                                      <p class="text-emerald-100 text-[10px]">Tersimpan di perangkat dulu, kirim lewat Sinkron</p>
+                                  </div>
+                              </div>
+                              <div class="flex items-center gap-2">
+                                  <span id="scanCountBadge" class="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full border border-white/30">0 Siswa</span>
+                                  <button onclick="resetScanTable()" title="Bersihkan tampilan (data yang belum disinkron akan ikut hilang dari daftar ini)" class="w-8 h-8 bg-white/10 hover:bg-white/25 rounded-lg flex items-center justify-center transition text-white/70 hover:text-white">
+                                      <i class="fas fa-trash-alt text-xs"></i>
+                                  </button>
+                              </div>
+                          </div>
+                          <!-- Info bar -->
+                          <div class="bg-emerald-50 border-b border-emerald-100 px-4 py-2 flex items-center gap-2 shrink-0">
+                              <i class="fas fa-check-circle text-emerald-500 text-xs"></i>
+                              <p class="text-[10px] text-emerald-700 font-semibold">Data <b>tersimpan di perangkat</b> setiap kali QR berhasil discan — klik <b>Sinkron</b> untuk kirim ke server</p>
+                          </div>
+                          <div class="overflow-y-auto flex-1" id="scanTableWrapper">
+                              <table class="w-full text-sm border-collapse">
+                                  <thead class="sticky top-0 z-10">
+                                      <tr class="bg-gray-50 border-b-2 border-gray-100">
+                                          <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase w-8">#</th>
+                                          <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase">Nama Siswa</th>
+                                          <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase">Kelas</th>
+                                          <th class="px-3 py-3 text-center text-[10px] font-bold text-gray-400 uppercase">Status</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="tbody-scan-live">
+                                      <tr id="scan-empty-row">
+                                          <td colspan="4" class="py-16 text-center">
+                                              <div class="flex flex-col items-center gap-3">
+                                                  <i class="fas fa-qrcode text-5xl text-gray-200"></i>
+                                                  <p class="font-semibold text-sm text-gray-400">Belum ada siswa yang discan</p>
+                                                  <p class="text-xs text-gray-300">Scan QR — tersimpan di perangkat, kirim lewat Sinkron</p>
+                                              </div>
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+
+              <div id="view-kartu-siswa" class="view-section animate-fade-in">
+                  <div id="kartuSiswaContainer"></div>
+              </div>
+
+          </div>
+      </main>
+  </div>
+
+  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 hidden flex items-center justify-center flex-col transition-opacity">
+    <div class="p-5 bg-white rounded-2xl shadow-2xl flex flex-col items-center">
+        <div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-3"></div>
+        <p class="text-slate-800 text-xs font-bold tracking-wide">Memproses...</p>
+    </div>
+  </div>
+  
+  <div id="modalContainer"></div>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
